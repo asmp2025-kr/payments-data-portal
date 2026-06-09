@@ -9,7 +9,7 @@ class CreatePlatformTables1000000000004 {
         await qr.query(`SET search_path TO app, public`);
         await qr.query(`
       CREATE TABLE IF NOT EXISTS app.data_products (
-        id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id         UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         name              VARCHAR(255) NOT NULL,
         slug              VARCHAR(100) NOT NULL,
@@ -37,7 +37,7 @@ class CreatePlatformTables1000000000004 {
     `);
         await qr.query(`
       CREATE TABLE IF NOT EXISTS app.data_product_access (
-        id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id       UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         product_id      UUID NOT NULL REFERENCES app.data_products(id),
         user_id         UUID NOT NULL REFERENCES app.users(id),
@@ -51,7 +51,7 @@ class CreatePlatformTables1000000000004 {
     `);
         await qr.query(`
       CREATE TABLE IF NOT EXISTS app.dashboards (
-        id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id      UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         name           VARCHAR(255) NOT NULL,
         description    TEXT,
@@ -71,7 +71,7 @@ class CreatePlatformTables1000000000004 {
     `);
         await qr.query(`
       CREATE TABLE IF NOT EXISTS app.reports (
-        id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id      UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         name           VARCHAR(255) NOT NULL,
         description    TEXT,
@@ -88,7 +88,7 @@ class CreatePlatformTables1000000000004 {
     `);
         await qr.query(`
       CREATE TABLE IF NOT EXISTS app.report_runs (
-        id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id      UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         report_id      UUID NOT NULL REFERENCES app.reports(id) ON DELETE CASCADE,
         format         VARCHAR(10) NOT NULL DEFAULT 'pdf'
@@ -107,7 +107,7 @@ class CreatePlatformTables1000000000004 {
     `);
         await qr.query(`
       CREATE TABLE IF NOT EXISTS app.notifications (
-        id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id  UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         user_id    UUID REFERENCES app.users(id),
         type       VARCHAR(50) NOT NULL

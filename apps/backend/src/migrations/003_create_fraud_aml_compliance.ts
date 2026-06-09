@@ -9,7 +9,7 @@ export class CreateFraudAmlCompliance1000000000003 implements MigrationInterface
     // ── Fraud Cases ────────────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.fraud_cases (
-        id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id       UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         case_ref        VARCHAR(50) NOT NULL,
         transaction_id  UUID REFERENCES app.transactions(id),
@@ -37,7 +37,7 @@ export class CreateFraudAmlCompliance1000000000003 implements MigrationInterface
     // ── AML Alerts ─────────────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.aml_alerts (
-        id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id     UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         alert_ref     VARCHAR(50) NOT NULL,
         customer_id   UUID,
@@ -64,7 +64,7 @@ export class CreateFraudAmlCompliance1000000000003 implements MigrationInterface
     // ── SAR Filings ────────────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.sar_filings (
-        id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id       UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         aml_alert_id    UUID REFERENCES app.aml_alerts(id),
         sar_ref         VARCHAR(50) NOT NULL,
@@ -80,7 +80,7 @@ export class CreateFraudAmlCompliance1000000000003 implements MigrationInterface
     // ── Sanctions Screening ────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.sanctions_screening (
-        id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id    UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         entity_type  VARCHAR(30) DEFAULT 'individual',
         entity_name  VARCHAR(500) NOT NULL,
@@ -98,7 +98,7 @@ export class CreateFraudAmlCompliance1000000000003 implements MigrationInterface
     // ── Compliance Findings ────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.compliance_findings (
-        id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id     UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         finding_ref   VARCHAR(50) NOT NULL,
         finding_type  VARCHAR(50) NOT NULL,
@@ -120,7 +120,7 @@ export class CreateFraudAmlCompliance1000000000003 implements MigrationInterface
     // ── Audit Logs ─────────────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.audit_logs (
-        id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id    UUID REFERENCES app.tenants(id) ON DELETE CASCADE,
         user_id      UUID REFERENCES app.users(id),
         action       VARCHAR(100) NOT NULL,
@@ -131,20 +131,8 @@ export class CreateFraudAmlCompliance1000000000003 implements MigrationInterface
         payload      JSONB,
         result       VARCHAR(20) DEFAULT 'success',
         created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      ) PARTITION BY RANGE (created_at)
+      )
     `);
-
-    // Create monthly partitions for current year
-    const year = new Date().getFullYear();
-    for (let m = 1; m <= 12; m++) {
-      const from = `${year}-${String(m).padStart(2,'0')}-01`;
-      const to = m === 12 ? `${year+1}-01-01` : `${year}-${String(m+1).padStart(2,'0')}-01`;
-      await qr.query(`
-        CREATE TABLE IF NOT EXISTS app.audit_logs_${year}_${String(m).padStart(2,'0')}
-        PARTITION OF app.audit_logs
-        FOR VALUES FROM ('${from}') TO ('${to}')
-      `);
-    }
 
     // ── Indexes ────────────────────────────────────────────────────────────
     const tables = ['fraud_cases','aml_alerts','sar_filings','sanctions_screening','compliance_findings'];

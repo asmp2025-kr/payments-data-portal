@@ -9,7 +9,7 @@ export class CreatePaymentDomain1000000000002 implements MigrationInterface {
     // ── Merchants ──────────────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.merchants (
-        id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id     UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         merchant_code VARCHAR(50) NOT NULL,
         name          VARCHAR(255) NOT NULL,
@@ -27,7 +27,7 @@ export class CreatePaymentDomain1000000000002 implements MigrationInterface {
     // ── Accounts ───────────────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.accounts (
-        id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id        UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         account_number   VARCHAR(50) NOT NULL,
         account_type     VARCHAR(30) NOT NULL DEFAULT 'current'
@@ -48,7 +48,7 @@ export class CreatePaymentDomain1000000000002 implements MigrationInterface {
     // ── Cards ──────────────────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.cards (
-        id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id        UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         card_number_masked VARCHAR(20) NOT NULL,
         card_token       VARCHAR(255),
@@ -71,7 +71,7 @@ export class CreatePaymentDomain1000000000002 implements MigrationInterface {
     // ── Transactions ───────────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.transactions (
-        id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id       UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         transaction_ref VARCHAR(100) NOT NULL,
         type            VARCHAR(30) NOT NULL
@@ -103,7 +103,7 @@ export class CreatePaymentDomain1000000000002 implements MigrationInterface {
     // ── Clearing Records ───────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.clearing_records (
-        id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id         UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         transaction_id    UUID REFERENCES app.transactions(id),
         clearing_batch    VARCHAR(50),
@@ -125,7 +125,7 @@ export class CreatePaymentDomain1000000000002 implements MigrationInterface {
     // ── Scheme Participants ────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.scheme_participants (
-        id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id        UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         participant_code VARCHAR(20) NOT NULL,
         name             VARCHAR(255) NOT NULL,
@@ -143,7 +143,7 @@ export class CreatePaymentDomain1000000000002 implements MigrationInterface {
     // ── Settlement Records ─────────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.settlement_records (
-        id               UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id        UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         settlement_ref   VARCHAR(50),
         settlement_date  DATE NOT NULL,
@@ -164,7 +164,7 @@ export class CreatePaymentDomain1000000000002 implements MigrationInterface {
     // ── Scheme Transactions (aggregate) ────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.scheme_transactions (
-        id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id      UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         participant_id UUID REFERENCES app.scheme_participants(id),
         volume         BIGINT NOT NULL DEFAULT 0,
@@ -181,7 +181,7 @@ export class CreatePaymentDomain1000000000002 implements MigrationInterface {
     // ── Reconciliation Records ─────────────────────────────────────────────
     await qr.query(`
       CREATE TABLE IF NOT EXISTS app.reconciliation_records (
-        id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id      UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         recon_ref      VARCHAR(100) NOT NULL,
         source_system  VARCHAR(50),

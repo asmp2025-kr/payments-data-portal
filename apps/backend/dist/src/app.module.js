@@ -45,8 +45,11 @@ exports.AppModule = AppModule = __decorate([
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],
                 useFactory: (cfg) => {
-                    const dbUrl = cfg.get('DATABASE_URL');
-                    const isSupabase = dbUrl?.includes('supabase.co');
+                    const rawUrl = cfg.get('DATABASE_URL') || '';
+                    const isSupabase = rawUrl.includes('supabase.co');
+                    const dbUrl = rawUrl.replace(/[?&]sslmode=[^&]*/g, '').replace(/\?$/, '');
+                    if (isSupabase)
+                        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
                     return {
                         type: 'postgres',
                         url: dbUrl,

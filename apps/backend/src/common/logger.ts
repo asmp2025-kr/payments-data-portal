@@ -1,4 +1,4 @@
-import winston from 'winston';
+import * as winston from 'winston';
 import LokiTransport from 'winston-loki';
 
 const transports: winston.transport[] = [

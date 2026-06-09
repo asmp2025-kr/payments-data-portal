@@ -34,8 +34,12 @@ import { HealthModule } from './health/health.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (cfg: ConfigService) => {
-        const dbUrl = cfg.get<string>('DATABASE_URL');
-        const isSupabase = dbUrl?.includes('supabase.co');
+        const rawUrl = cfg.get<string>('DATABASE_URL') || '';
+        const isSupabase = rawUrl.includes('supabase.co');
+        // Strip sslmode from URL — we control SSL via the ssl option below
+        const dbUrl = rawUrl.replace(/[?&]sslmode=[^&]*/g, '').replace(/\?$/, '');
+        // For Supabase, disable Node.js certificate verification globally
+        if (isSupabase) process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
         return {
           type: 'postgres',
           url: dbUrl,

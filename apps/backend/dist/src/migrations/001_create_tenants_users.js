@@ -9,7 +9,7 @@ class CreateTenantsUsers1000000000001 {
         await qr.query(`SET search_path TO app, public`);
         await qr.query(`
       CREATE TABLE IF NOT EXISTS app.tenants (
-        id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         name          VARCHAR(255) NOT NULL,
         slug          VARCHAR(100) NOT NULL UNIQUE,
         logo_url      TEXT,
@@ -30,7 +30,7 @@ class CreateTenantsUsers1000000000001 {
     `);
         await qr.query(`
       CREATE TABLE IF NOT EXISTS app.users (
-        id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id     UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         keycloak_id   VARCHAR(255) UNIQUE,
         email         VARCHAR(255) NOT NULL,
@@ -50,7 +50,7 @@ class CreateTenantsUsers1000000000001 {
         await qr.query(`CREATE INDEX idx_users_email ON app.users(email)`);
         await qr.query(`
       CREATE TABLE IF NOT EXISTS app.subscriptions (
-        id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         tenant_id     UUID NOT NULL REFERENCES app.tenants(id) ON DELETE CASCADE,
         plan          VARCHAR(50) NOT NULL,
         max_users     INTEGER NOT NULL DEFAULT 5,
