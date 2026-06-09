@@ -8,9 +8,9 @@ RUN npm run build
 FROM node:20-alpine AS production
 WORKDIR /app
 
-RUN apk add --no-cache chromium
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# Skip Chromium on Railway (Puppeteer disabled)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV DISABLE_PUPPETEER=true
 
 COPY package*.json ./
 RUN npm ci --only=production --legacy-peer-deps
