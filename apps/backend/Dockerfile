@@ -1,8 +1,12 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
+
+# Copy backend package files (build context = repo root)
+COPY apps/backend/package*.json ./
 RUN npm install --legacy-peer-deps
-COPY . .
+
+# Copy backend source
+COPY apps/backend/ .
 RUN npm run build
 
 FROM node:20-alpine AS production
@@ -12,7 +16,7 @@ WORKDIR /app
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV DISABLE_PUPPETEER=true
 
-COPY package*.json ./
+COPY apps/backend/package*.json ./
 RUN npm install --only=production --legacy-peer-deps
 
 COPY --from=builder /app/dist ./dist
