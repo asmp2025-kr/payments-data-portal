@@ -1,11 +1,11 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "cd apps/backend && npm install --legacy-peer-deps && npm run build"
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "apps/backend/Dockerfile"
   },
   "deploy": {
-    "startCommand": "cd apps/backend && node dist/src/main",
+    "startCommand": "node dist/src/main",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 60,
     "restartPolicyType": "ON_FAILURE",

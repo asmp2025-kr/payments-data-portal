@@ -1,32 +1,26 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 WORKDIR /app
 
-# Copy backend package files (build context = repo root)
+# Disable Puppeteer/Chromium (not needed on Railway)
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV DISABLE_PUPPETEER=true
+ENV NODE_ENV=production
+
+# Copy package files from backend directory (build context = repo root)
 COPY apps/backend/package*.json ./
+
+# Install all deps (need devDeps for build)
 RUN npm install --legacy-peer-deps
 
 # Copy backend source
 COPY apps/backend/ .
+
+# Build NestJS
 RUN npm run build
 
-FROM node:20-alpine AS production
-WORKDIR /app
-
-# Skip Chromium on Railway (Puppeteer disabled)
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV DISABLE_PUPPETEER=true
-
-COPY apps/backend/package*.json ./
-RUN npm install --only=production --legacy-peer-deps
-
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/nest-cli.json ./nest-cli.json 2>/dev/null || true
-
-RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
-USER nestjs
+# Remove dev dependencies after build
+RUN npm prune --production
 
 EXPOSE 3000
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD wget -qO- http://localhost:3000/health || exit 1
 
 CMD ["node", "dist/src/main"]
