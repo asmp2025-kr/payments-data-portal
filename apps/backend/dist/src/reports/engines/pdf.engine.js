@@ -13,41 +13,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PdfEngine = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
-const puppeteer_1 = require("puppeteer");
 let PdfEngine = PdfEngine_1 = class PdfEngine {
     constructor(cfg) {
         this.cfg = cfg;
         this.logger = new common_1.Logger(PdfEngine_1.name);
     }
-    async generate(url) {
-        const browser = await puppeteer_1.default.launch({
-            headless: 'new',
-            executablePath: this.cfg.get('PUPPETEER_EXECUTABLE_PATH') || undefined,
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-gpu',
-            ],
-        });
-        try {
-            const page = await browser.newPage();
-            await page.setViewport({ width: 1200, height: 800 });
-            await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
-            await page.waitForSelector('[data-report-ready]', { timeout: 30000 });
-            const pdf = await page.pdf({
-                format: 'A4',
-                printBackground: true,
-                margin: { top: '20mm', right: '15mm', bottom: '20mm', left: '15mm' },
-                displayHeaderFooter: true,
-                headerTemplate: '<div style="font-size:8px;width:100%;text-align:center;color:#666">Payments Data Portal — Confidential</div>',
-                footerTemplate: '<div style="font-size:8px;width:100%;text-align:center;color:#666">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>',
-            });
-            return Buffer.from(pdf);
-        }
-        finally {
-            await browser.close();
-        }
+    async generate(_url) {
+        this.logger.warn('PDF generation is disabled (DISABLE_PUPPETEER=true)');
+        const placeholder = `PDF generation is disabled in this deployment.\nEnable by setting DISABLE_PUPPETEER=false and installing Chromium.`;
+        return Buffer.from(placeholder, 'utf-8');
     }
 };
 exports.PdfEngine = PdfEngine;

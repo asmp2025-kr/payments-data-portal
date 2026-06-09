@@ -8,7 +8,7 @@ ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
 # Install production dependencies only (pre-built dist is copied from repo)
 COPY apps/backend/package*.json ./
-RUN npm install --only=production --legacy-peer-deps
+RUN npm ci --omit=dev --ignore-scripts 2>/dev/null || npm install --only=production --legacy-peer-deps --ignore-scripts
 
 # Copy pre-built dist (committed to repo — no build step needed)
 COPY apps/backend/dist ./dist

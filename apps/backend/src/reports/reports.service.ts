@@ -2,7 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { Client as MinioClient } from 'minio';
+// MinioClient disabled in cloud deployment (DISABLE_MINIO=true)
+// import { Client as MinioClient } from 'minio';
+type MinioClient = any;
 import { PdfEngine } from './engines/pdf.engine';
 import { ExcelEngine } from './engines/excel.engine';
 import { CsvEngine } from './engines/csv.engine';
@@ -19,13 +21,8 @@ export class ReportsService {
     private readonly excelEngine: ExcelEngine,
     private readonly csvEngine: CsvEngine,
   ) {
-    this.minio = new MinioClient({
-      endPoint: cfg.get('MINIO_ENDPOINT', 'localhost'),
-      port: parseInt(cfg.get('MINIO_PORT', '9000')),
-      useSSL: cfg.get('MINIO_USE_SSL') === 'true',
-      accessKey: cfg.get('MINIO_ACCESS_KEY', 'minio_admin'),
-      secretKey: cfg.get('MINIO_SECRET_KEY', 'minio_secret'),
-    });
+    // MinioClient disabled in cloud deployment
+    this.minio = null;
   }
 
   getCatalog(module?: string, search?: string) {

@@ -1,5 +1,4 @@
 import * as winston from 'winston';
-import LokiTransport from 'winston-loki';
 
 const transports: winston.transport[] = [
   new winston.transports.Console({
@@ -14,18 +13,8 @@ const transports: winston.transport[] = [
   }),
 ];
 
-if (process.env.LOKI_URL) {
-  transports.push(
-    new LokiTransport({
-      host: process.env.LOKI_URL,
-      labels: { app: 'payments-backend' },
-      json: true,
-      format: winston.format.json(),
-      replaceTimestamp: true,
-      onConnectionError: (err) => console.error('Loki connection error:', err),
-    }),
-  );
-}
+// Loki transport disabled in cloud deployment (DISABLE_LOKI=true / no winston-loki package)
+// if (process.env.LOKI_URL) { ... }
 
 export const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',

@@ -17,7 +17,6 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const config_1 = require("@nestjs/config");
-const minio_1 = require("minio");
 const pdf_engine_1 = require("./engines/pdf.engine");
 const excel_engine_1 = require("./engines/excel.engine");
 const csv_engine_1 = require("./engines/csv.engine");
@@ -29,13 +28,7 @@ let ReportsService = class ReportsService {
         this.pdfEngine = pdfEngine;
         this.excelEngine = excelEngine;
         this.csvEngine = csvEngine;
-        this.minio = new minio_1.Client({
-            endPoint: cfg.get('MINIO_ENDPOINT', 'localhost'),
-            port: parseInt(cfg.get('MINIO_PORT', '9000')),
-            useSSL: cfg.get('MINIO_USE_SSL') === 'true',
-            accessKey: cfg.get('MINIO_ACCESS_KEY', 'minio_admin'),
-            secretKey: cfg.get('MINIO_SECRET_KEY', 'minio_secret'),
-        });
+        this.minio = null;
     }
     getCatalog(module, search) {
         let catalog = report_catalog_1.REPORT_CATALOG;

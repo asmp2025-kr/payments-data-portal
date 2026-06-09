@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import puppeteer from 'puppeteer';
 
 @Injectable()
 export class PdfEngine {
@@ -8,36 +7,11 @@ export class PdfEngine {
 
   constructor(private readonly cfg: ConfigService) {}
 
-  async generate(url: string): Promise<Buffer> {
-    const browser = await puppeteer.launch({
-      headless: 'new',
-      executablePath: this.cfg.get('PUPPETEER_EXECUTABLE_PATH') || undefined,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-      ],
-    });
-
-    try {
-      const page = await browser.newPage();
-      await page.setViewport({ width: 1200, height: 800 });
-      await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
-      await page.waitForSelector('[data-report-ready]', { timeout: 30000 });
-
-      const pdf = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: { top: '20mm', right: '15mm', bottom: '20mm', left: '15mm' },
-        displayHeaderFooter: true,
-        headerTemplate: '<div style="font-size:8px;width:100%;text-align:center;color:#666">Payments Data Portal — Confidential</div>',
-        footerTemplate: '<div style="font-size:8px;width:100%;text-align:center;color:#666">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>',
-      });
-
-      return Buffer.from(pdf);
-    } finally {
-      await browser.close();
-    }
+  async generate(_url: string): Promise<Buffer> {
+    // Puppeteer is disabled in cloud deployment (DISABLE_PUPPETEER=true)
+    // PDF generation returns a placeholder until Puppeteer is available
+    this.logger.warn('PDF generation is disabled (DISABLE_PUPPETEER=true)');
+    const placeholder = `PDF generation is disabled in this deployment.\nEnable by setting DISABLE_PUPPETEER=false and installing Chromium.`;
+    return Buffer.from(placeholder, 'utf-8');
   }
 }
