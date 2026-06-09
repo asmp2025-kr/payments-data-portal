@@ -1,0 +1,313 @@
+{
+  "id": "payments-portal",
+  "realm": "payments-portal",
+  "displayName": "Payments Data Portal",
+  "displayNameHtml": "<b>Payments Data Portal</b>",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 5,
+  "accessTokenLifespan": 300,
+  "accessTokenLifespanForImplicitFlow": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionIdleTimeout": 2592000,
+  "accessCodeLifespan": 60,
+  "accessCodeLifespanUserAction": 300,
+  "accessCodeLifespanLogin": 1800,
+  "internationalizationEnabled": false,
+  "defaultLocale": "en",
+  "roles": {
+    "realm": [
+      { "name": "super_admin", "description": "Full system access across all tenants" },
+      { "name": "bank_admin", "description": "Tenant administrator" },
+      { "name": "operations", "description": "Operations user" },
+      { "name": "compliance", "description": "Compliance officer" },
+      { "name": "executive", "description": "Executive user" },
+      { "name": "auditor", "description": "Read-only auditor" }
+    ]
+  },
+  "groups": [
+    { "name": "super-admins", "realmRoles": ["super_admin"] },
+    { "name": "bank-admins", "realmRoles": ["bank_admin"] },
+    { "name": "operations", "realmRoles": ["operations"] },
+    { "name": "compliance-officers", "realmRoles": ["compliance"] },
+    { "name": "executives", "realmRoles": ["executive"] },
+    { "name": "auditors", "realmRoles": ["auditor"] }
+  ],
+  "clients": [
+    {
+      "clientId": "payments-portal",
+      "name": "Payments Data Portal",
+      "description": "Main SaaS application client",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "payments-portal-secret-change-in-prod",
+      "redirectUris": [
+        "http://localhost/*",
+        "http://localhost:4000/*",
+        "https://portal.example.com/*"
+      ],
+      "webOrigins": [
+        "http://localhost",
+        "http://localhost:4000",
+        "https://portal.example.com"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "access.token.lifespan": "300",
+        "saml.force.post.binding": "false",
+        "saml.multivalued.roles": "false",
+        "exclude.session.state.from.auth.response": "false",
+        "saml_force_name_id_format": "false",
+        "saml.client.signature": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "false",
+        "saml.onetimeuse.condition": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "saml.allow.ecp.flow": "false",
+        "saml.assertion.signature": "false",
+        "saml.encrypt": "false",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "oidc.ciba.grant.enabled": "false",
+        "saml.server.signature": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "tenant_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "tenant_id",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "tenant_id",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "tenant_slug",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "tenant_slug",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "tenant_slug",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "role",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "role",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "role",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "user.attribute": "foo",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "realm_roles",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "payments-portal",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ],
+      "defaultClientScopes": ["web-origins", "profile", "roles", "email"],
+      "optionalClientScopes": ["address", "phone", "offline_access", "microprofile-jwt"]
+    },
+    {
+      "clientId": "payments-portal-backend",
+      "name": "Payments Portal Backend Service",
+      "description": "Backend service account for system operations",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "backend-service-secret-change-in-prod",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect"
+    }
+  ],
+  "users": [
+    {
+      "username": "super-admin",
+      "email": "super-admin@payments-portal.com",
+      "firstName": "Super",
+      "lastName": "Admin",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "SuperAdmin123!", "temporary": false }],
+      "realmRoles": ["super_admin"],
+      "attributes": {
+        "tenant_id": ["system"],
+        "role": ["super_admin"]
+      }
+    },
+    {
+      "username": "admin@bank-alpha.com",
+      "email": "admin@bank-alpha.com",
+      "firstName": "Admin",
+      "lastName": "Alpha Bank",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "BankAdmin123!", "temporary": false }],
+      "realmRoles": ["bank_admin"],
+      "attributes": {
+        "tenant_slug": ["bank-alpha"],
+        "role": ["bank_admin"]
+      }
+    },
+    {
+      "username": "admin@bank-beta.com",
+      "email": "admin@bank-beta.com",
+      "firstName": "Admin",
+      "lastName": "Beta Financial",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "BankAdmin123!", "temporary": false }],
+      "realmRoles": ["bank_admin"],
+      "attributes": {
+        "tenant_slug": ["bank-beta"],
+        "role": ["bank_admin"]
+      }
+    },
+    {
+      "username": "ops@bank-alpha.com",
+      "email": "ops@bank-alpha.com",
+      "firstName": "Operations",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Ops123!", "temporary": false }],
+      "realmRoles": ["operations"],
+      "attributes": {
+        "tenant_slug": ["bank-alpha"],
+        "role": ["operations"]
+      }
+    },
+    {
+      "username": "compliance@bank-alpha.com",
+      "email": "compliance@bank-alpha.com",
+      "firstName": "Compliance",
+      "lastName": "Officer",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Compliance123!", "temporary": false }],
+      "realmRoles": ["compliance"],
+      "attributes": {
+        "tenant_slug": ["bank-alpha"],
+        "role": ["compliance"]
+      }
+    },
+    {
+      "username": "exec@bank-alpha.com",
+      "email": "exec@bank-alpha.com",
+      "firstName": "Executive",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "Exec123!", "temporary": false }],
+      "realmRoles": ["executive"],
+      "attributes": {
+        "tenant_slug": ["bank-alpha"],
+        "role": ["executive"]
+      }
+    }
+  ],
+  "passwordPolicy": "length(8) and upperCase(1) and digits(1) and notUsername",
+  "otpPolicyType": "totp",
+  "otpPolicyAlgorithm": "HmacSHA1",
+  "otpPolicyInitialCounter": 0,
+  "otpPolicyDigits": 6,
+  "otpPolicyLookAheadWindow": 1,
+  "otpPolicyPeriod": 30,
+  "smtpServer": {
+    "host": "${SMTP_HOST:smtp}",
+    "port": "${SMTP_PORT:1025}",
+    "from": "no-reply@payments-portal.com",
+    "fromDisplayName": "Payments Data Portal",
+    "starttls": "false",
+    "auth": "false"
+  },
+  "loginTheme": "keycloak",
+  "accountTheme": "keycloak.v2",
+  "adminTheme": "keycloak",
+  "emailTheme": "keycloak",
+  "eventsEnabled": true,
+  "eventsListeners": ["jboss-logging"],
+  "enabledEventTypes": [
+    "LOGIN", "LOGIN_ERROR", "LOGOUT", "REGISTER", "REGISTER_ERROR",
+    "UPDATE_PASSWORD", "UPDATE_PASSWORD_ERROR", "RESET_PASSWORD",
+    "CLIENT_LOGIN", "CLIENT_LOGIN_ERROR", "CODE_TO_TOKEN", "CODE_TO_TOKEN_ERROR",
+    "USER_INFO_REQUEST", "TOKEN_EXCHANGE", "PERMISSION_TOKEN"
+  ],
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": true,
+  "identityProviders": [],
+  "identityProviderMappers": [],
+  "components": {
+    "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
+      {
+        "name": "Allowed Protocol Mapper Types",
+        "providerId": "allowed-protocol-mappers",
+        "subType": "anonymous",
+        "config": {
+          "allowed-protocol-mapper-types": [
+            "oidc-full-name-mapper", "oidc-sha256-pairwise-sub-mapper",
+            "oidc-address-mapper", "oidc-usermodel-attribute-mapper",
+            "oidc-usermodel-property-mapper", "saml-user-attribute-mapper",
+            "saml-role-list-mapper", "saml-user-property-mapper"
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "payments-portal-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "seed": "ts-node --project tsconfig.seed.json seed.ts",
+    "seed:docker": "POSTGRES_HOST=localhost POSTGRES_PORT=5432 POSTGRES_DB=payments POSTGRES_USER=postgres POSTGRES_PASSWORD=postgres ts-node --project tsconfig.seed.json seed.ts"
+  },
+  "dependencies": {
+    "pg": "^8.11.3",
+    "bcrypt": "^5.1.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/uuid": "^9.0.7",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

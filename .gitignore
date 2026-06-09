@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Environment files (never commit secrets)
+.env
+.env.local
+.env.production
+.env.*.local
+apps/backend/.env
+apps/frontend/.env.local
+
+# Keep cloud templates (no real secrets)
+!.env.example
+!apps/backend/.env.cloud
+!apps/frontend/.env.cloud
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Docker volumes (local only)
+infra/postgres/data/
+infra/minio/data/
+infra/opensearch/data/
+infra/grafana/data/
+infra/loki/data/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Misc
+.turbo/
+*.tgz

@@ -1,0 +1,14 @@
+apiVersion: v2
+name: payments-portal
+description: Enterprise Payments Data Product Portal
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - payments
+  - fintech
+  - analytics
+  - dashboard
+maintainers:
+  - name: Payments Team
+    email: payments@example.com

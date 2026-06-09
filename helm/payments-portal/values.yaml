@@ -1,0 +1,53 @@
+global:
+  namespace: payments-portal
+  imageRegistry: ghcr.io/your-org
+
+backend:
+  image: payments-backend
+  tag: latest
+  replicas: 2
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+  env:
+    NODE_ENV: production
+    PORT: "3000"
+
+frontend:
+  image: payments-frontend
+  tag: latest
+  replicas: 2
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+postgres:
+  enabled: true
+  image: postgres:16-alpine
+  storage: 50Gi
+  credentials:
+    database: payments_db
+    username: payments_user
+
+keycloak:
+  enabled: true
+  image: quay.io/keycloak/keycloak:24.0
+  adminUser: admin
+
+minio:
+  enabled: true
+  image: minio/minio:latest
+  storage: 100Gi
+
+ingress:
+  enabled: true
+  host: payments.yourdomain.com
+  tls: true
