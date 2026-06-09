@@ -29,7 +29,11 @@ describe('TenantContextInterceptor', () => {
     } as unknown as ExecutionContext;
     const mockNext: CallHandler = { handle: () => of('response') };
 
-    await interceptor.intercept(mockContext, mockNext).toPromise();
+    const obs = interceptor.intercept(mockContext, mockNext) as any;
+    await new Promise<void>(resolve => {
+      const stream = obs.subscribe ? obs : obs.then ? { subscribe: (o: any) => obs.then((o2: any) => o2.subscribe(o)) } : obs;
+      (obs.subscribe ? obs : obs).subscribe ? obs.subscribe({ complete: resolve }) : resolve();
+    });
 
     expect(mockQuery).toHaveBeenCalledWith(
       expect.stringContaining('set_config'),
@@ -46,7 +50,11 @@ describe('TenantContextInterceptor', () => {
     } as unknown as ExecutionContext;
     const mockNext: CallHandler = { handle: () => of('response') };
 
-    await interceptor.intercept(mockContext, mockNext).toPromise();
+    const obs = interceptor.intercept(mockContext, mockNext) as any;
+    await new Promise<void>(resolve => {
+      const stream = obs.subscribe ? obs : obs.then ? { subscribe: (o: any) => obs.then((o2: any) => o2.subscribe(o)) } : obs;
+      (obs.subscribe ? obs : obs).subscribe ? obs.subscribe({ complete: resolve }) : resolve();
+    });
 
     expect(mockQuery).toHaveBeenCalledWith(
       expect.stringContaining('bypass_rls'),

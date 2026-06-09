@@ -20,7 +20,7 @@ import { SimpleAuthController } from './simple-auth.controller';
       useFactory: (cfg: ConfigService) => ({
         secret: cfg.get<string>('JWT_SECRET', 'payments_portal_secret'),
         signOptions: {
-          expiresIn: cfg.get<string>('JWT_EXPIRY', '8h'),
+          expiresIn: cfg.get('JWT_EXPIRY', '8h') as any,
         },
       }),
     }),

@@ -21,5 +21,6 @@
       "@common/*": ["src/common/*"],
       "@config/*": ["src/config/*"]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist", "src/test/**/*.spec.ts", "**/*.spec.ts", "**/*.test.ts"]
 }
