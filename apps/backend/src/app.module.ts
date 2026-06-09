@@ -33,21 +33,27 @@ import { HealthModule } from './health/health.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (cfg: ConfigService) => ({
-        type: 'postgres',
-        url: cfg.get('DATABASE_URL'),
-        schema: 'app',
-        synchronize: false,
-        migrationsRun: true,
-        migrations: [__dirname + '/migrations/*.{ts,js}'],
-        entities: [__dirname + '/**/*.entity.{ts,js}'],
-        logging: cfg.get('NODE_ENV') === 'development' ? ['query', 'error'] : ['error'],
-        extra: {
-          max: 20,
-          idleTimeoutMillis: 30000,
-          connectionTimeoutMillis: 2000,
-        },
-      }),
+      useFactory: (cfg: ConfigService) => {
+        const dbUrl = cfg.get<string>('DATABASE_URL');
+        const isSupabase = dbUrl?.includes('supabase.co');
+        return {
+          type: 'postgres',
+          url: dbUrl,
+          schema: 'app',
+          synchronize: false,
+          migrationsRun: true,
+          migrations: [__dirname + '/migrations/*.{ts,js}'],
+          entities: [__dirname + '/**/*.entity.{ts,js}'],
+          logging: cfg.get('NODE_ENV') === 'development' ? ['query', 'error'] : ['error'],
+          ssl: isSupabase ? { rejectUnauthorized: false } : false,
+          extra: {
+            max: 10,
+            idleTimeoutMillis: 30000,
+            connectionTimeoutMillis: 5000,
+            ssl: isSupabase ? { rejectUnauthorized: false } : false,
+          },
+        };
+      },
     }),
 
     EventEmitterModule.forRoot(),

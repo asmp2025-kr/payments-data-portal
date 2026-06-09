@@ -16,9 +16,13 @@ async function bootstrap() {
   const port = config.get<number>('PORT', 3000);
 
   app.use(helmet());
+  const corsOrigins = config.get<string>('CORS_ORIGINS', 'http://localhost:4000')
+    .split(',').map(s => s.trim());
   app.enableCors({
-    origin: config.get('FRONTEND_URL', 'http://localhost:4000'),
+    origin: corsOrigins,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID'],
   });
 
   app.useGlobalPipes(

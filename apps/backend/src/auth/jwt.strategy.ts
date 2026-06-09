@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { passportJwtSecret } from 'jwks-rsa';
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -13,41 +12,25 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {
     super({
-      secretOrKeyProvider: passportJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: `${cfg.get('KEYCLOAK_URL')}/realms/${cfg.get('KEYCLOAK_REALM')}/protocol/openid-connect/certs`,
-      }),
+      // Simple symmetric JWT secret — works without Keycloak
+      secretOrKey: cfg.get<string>('JWT_SECRET', 'payments_portal_secret'),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      audience: cfg.get('KEYCLOAK_CLIENT_ID'),
-      issuer: `${cfg.get('KEYCLOAK_URL')}/realms/${cfg.get('KEYCLOAK_REALM')}`,
-      algorithms: ['RS256'],
+      algorithms: ['HS256'],
     });
   }
 
   async validate(payload: any) {
     const tenantId = payload.tenant_id;
     if (!tenantId) throw new UnauthorizedException('No tenant_id in token');
-
-    // Resolve user from DB
-    const [user] = await this.dataSource.query(
-      `SELECT u.id, u.tenant_id, u.email, u.role, u.is_active
-       FROM app.users u
-       WHERE u.keycloak_id = $1 AND u.is_active = true`,
-      [payload.sub],
-    );
-
-    if (!user) throw new UnauthorizedException('User not found or inactive');
+    if (!payload.sub) throw new UnauthorizedException('Invalid token payload');
 
     return {
-      sub: user.id,
-      keycloakId: payload.sub,
-      tenantId: user.tenant_id,
-      email: user.email,
-      role: user.role,
-      firstName: payload.given_name,
-      lastName: payload.family_name,
+      sub: payload.sub,
+      tenantId: payload.tenant_id,
+      email: payload.email,
+      role: payload.role,
+      firstName: payload.first_name,
+      lastName: payload.last_name,
     };
   }
 }
