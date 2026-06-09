@@ -13,7 +13,7 @@ async function bootstrap() {
         logger: ['error', 'warn', 'log'],
     });
     const config = app.get(config_1.ConfigService);
-    const port = config.get('PORT', 3000);
+    const port = parseInt(process.env.PORT || '3000', 10);
     app.use((0, helmet_1.default)());
     const corsOrigins = config.get('CORS_ORIGINS', 'http://localhost:4000')
         .split(',').map(s => s.trim());
