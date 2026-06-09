@@ -5,7 +5,7 @@
     "dockerfilePath": "apps/backend/Dockerfile"
   },
   "deploy": {
-    "startCommand": "node dist/main",
+    "startCommand": "node dist/src/main",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 60,
     "restartPolicyType": "ON_FAILURE",

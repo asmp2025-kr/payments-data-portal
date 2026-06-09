@@ -20,6 +20,7 @@ COPY apps/backend/package*.json ./
 RUN npm install --only=production --legacy-peer-deps
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/nest-cli.json ./nest-cli.json 2>/dev/null || true
 
 RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
 USER nestjs
@@ -28,4 +29,4 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD wget -qO- http://localhost:3000/health || exit 1
 
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]
