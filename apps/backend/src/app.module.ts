@@ -53,8 +53,10 @@ import { HealthModule } from './health/health.module';
           extra: {
             max: 10,
             idleTimeoutMillis: 30000,
-            connectionTimeoutMillis: 5000,
+            connectionTimeoutMillis: 10000,
             ssl: isSupabase ? { rejectUnauthorized: false } : false,
+            // Force IPv4 to avoid ENETUNREACH on Railway (Supabase resolves to IPv6)
+            family: 4,
           },
         };
       },

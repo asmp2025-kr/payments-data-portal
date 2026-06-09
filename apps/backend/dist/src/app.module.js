@@ -63,8 +63,9 @@ exports.AppModule = AppModule = __decorate([
                         extra: {
                             max: 10,
                             idleTimeoutMillis: 30000,
-                            connectionTimeoutMillis: 5000,
+                            connectionTimeoutMillis: 10000,
                             ssl: isSupabase ? { rejectUnauthorized: false } : false,
+                            family: 4,
                         },
                     };
                 },
