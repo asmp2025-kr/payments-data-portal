@@ -1,26 +1,16 @@
 FROM node:20-alpine
 WORKDIR /app
 
-# Disable Puppeteer/Chromium (not needed on Railway)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV DISABLE_PUPPETEER=true
 ENV NODE_ENV=production
 
-# Copy package files from backend directory (build context = repo root)
+# Install production dependencies only (pre-built dist is copied from repo)
 COPY apps/backend/package*.json ./
+RUN npm install --only=production --legacy-peer-deps --ignore-scripts
 
-# Install all deps (need devDeps for build)
-RUN npm install --legacy-peer-deps
-
-# Copy backend source
-COPY apps/backend/ .
-
-# Build NestJS
-RUN npm run build
-
-# Remove dev dependencies after build
-RUN npm prune --production
+# Copy pre-built dist (committed to repo — no build step needed)
+COPY apps/backend/dist ./dist
 
 EXPOSE 3000
-
 CMD ["node", "dist/src/main"]

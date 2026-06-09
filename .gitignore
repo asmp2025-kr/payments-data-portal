@@ -4,10 +4,11 @@ node_modules/
 .pnp.js
 
 # Build outputs
-dist/
+# Note: apps/backend/dist IS committed (pre-built for Railway)
 build/
 .next/
 out/
+apps/frontend/dist/
 *.tsbuildinfo
 
 # Environment files (never commit secrets)
