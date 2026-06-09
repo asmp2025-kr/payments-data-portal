@@ -13,7 +13,7 @@ exports.SimpleAuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const typeorm_1 = require("typeorm");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 let SimpleAuthService = class SimpleAuthService {
     constructor(jwtService, dataSource) {
         this.jwtService = jwtService;
