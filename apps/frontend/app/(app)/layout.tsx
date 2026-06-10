@@ -11,7 +11,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { sidebarCollapsed } = useAppStore();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    // Redirect to login if no JWT token found
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      window.location.href = '/login';
+    }
+  }, []);
 
   if (!mounted) return null;
 
