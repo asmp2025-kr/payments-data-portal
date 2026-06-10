@@ -16,10 +16,13 @@ async function bootstrap() {
   const port = parseInt(process.env.PORT || '3000', 10);
 
   app.use(helmet());
-  const corsOrigins = config.get<string>('CORS_ORIGINS', 'http://localhost:4000')
-    .split(',').map(s => s.trim());
+  const rawOrigins = config.get<string>('CORS_ORIGINS', '*');
+  // Support wildcard '*', comma-separated list, or .vercel.app wildcard suffix
+  const corsOrigin: any = rawOrigins === '*'
+    ? true  // allow all origins
+    : rawOrigins.split(',').map((s: string) => s.trim());
   app.enableCors({
-    origin: corsOrigins,
+    origin: corsOrigin,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID'],

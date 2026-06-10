@@ -15,10 +15,12 @@ async function bootstrap() {
     const config = app.get(config_1.ConfigService);
     const port = parseInt(process.env.PORT || '3000', 10);
     app.use((0, helmet_1.default)());
-    const corsOrigins = config.get('CORS_ORIGINS', 'http://localhost:4000')
-        .split(',').map(s => s.trim());
+    const rawOrigins = config.get('CORS_ORIGINS', '*');
+    const corsOrigin = rawOrigins === '*'
+        ? true
+        : rawOrigins.split(',').map((s) => s.trim());
     app.enableCors({
-        origin: corsOrigins,
+        origin: corsOrigin,
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID'],
